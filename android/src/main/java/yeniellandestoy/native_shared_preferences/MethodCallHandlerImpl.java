@@ -7,6 +7,7 @@ package yeniellandestoy.native_shared_preferences;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Base64;
@@ -56,16 +57,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
    * SharedPreferences} based on the {@code context}.
    */
   MethodCallHandlerImpl(Context context) {
-    SharedPreferences pref;
-    try {
-      String resourceName = getResourceFromContext(context, "flutter_shared_pref_name");
-      Log.d("SharedPreferences:", "using custom resource name - " + resourceName);
-      pref = context.getSharedPreferences(resourceName, Context.MODE_PRIVATE);
-    } catch (IllegalArgumentException e) {
-      Log.d("SharedPreferences:", "using default resource name");
-      pref = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-    }
-    preferences = pref;
+    preferences = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_PRIVATE);
     this.context = context;
   }
 
