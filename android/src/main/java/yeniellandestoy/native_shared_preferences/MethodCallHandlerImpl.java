@@ -215,21 +215,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           value = Double.valueOf(doubleStr);
         }
       } else if (value instanceof Set) {
-        // This only happens for previous usage of setStringSet. The app expects a list.
-        List<String> listValue = new ArrayList<>((Set) value);
-        // Let's migrate the value too while we are at it.
-        boolean success =
-                preferences
-                        .edit()
-                        .remove(key)
-                        .putString(key, LIST_IDENTIFIER + encodeList(listValue))
-                        .commit();
-        if (!success) {
-          // If we are unable to migrate the existing preferences, it means we potentially lost them.
-          // In this case, an error from getAllPrefs() is appropriate since it will alert the app during plugin initialization.
-          throw new IOException("Could not migrate set to list");
-        }
-        value = listValue;
+          continue;
       }
       filteredPrefs.put(key, value);
     }
