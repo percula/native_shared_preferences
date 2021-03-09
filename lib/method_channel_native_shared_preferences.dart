@@ -23,7 +23,7 @@ class MethodChannelNativeSharedPreferencesStore extends NativeSharedPreferencesS
   }
 
   @override
-  Future<bool> setValue(String valueType, String key, Object value) {
+  Future<bool> setValue(String? valueType, String key, Object value) {
     return _invokeBoolMethod('set$valueType', <String, dynamic>{
       'key': key,
       'value': value,
@@ -35,17 +35,17 @@ class MethodChannelNativeSharedPreferencesStore extends NativeSharedPreferencesS
   }
 
   @override
-  Future<bool> clear() {
+  Future<bool?> clear() {
     return _kChannel.invokeMethod<bool>('clear');
   }
 
   @override
-  Future<Map<String, Object>> getAll() {
+  Future<Map<String, Object>?> getAll() {
     return _kChannel.invokeMapMethod<String, Object>('getAll');
   }
 
   @override
-  Future<Map<String, Object>> getAllFromDictionary(List<String> keys) {
+  Future<Map<String, Object>?> getAllFromDictionary(List<String> keys) {
     return _kChannel.invokeMapMethod('getAllFromDictionary', <String, Object>{
       'keys': keys,
     });

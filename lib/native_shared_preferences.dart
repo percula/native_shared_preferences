@@ -7,7 +7,7 @@ class NativeSharedPreferences {
   NativeSharedPreferences._(this._preferenceCache);
 
   static const String _prefix = '';
-  static Completer<NativeSharedPreferences> _completer;
+  static Completer<NativeSharedPreferences>? _completer;
 
   static NativeSharedPreferencesStorePlatform get _store => NativeSharedPreferencesStorePlatform.instance;
 
@@ -19,18 +19,18 @@ class NativeSharedPreferences {
     if (_completer == null) {
       _completer = Completer<NativeSharedPreferences>();
       try {
-        final Map<String, Object> preferencesMap = await _getSharedPreferencesMap();
-        _completer.complete(NativeSharedPreferences._(preferencesMap));
+        final Map<String, Object?> preferencesMap = await _getSharedPreferencesMap();
+        _completer!.complete(NativeSharedPreferences._(preferencesMap));
       } on Exception catch (e) {
         // If there's an error, explicitly return the future with an error.
         // then set the completer to null so we can retry.
-        _completer.completeError(e);
-        final Future<NativeSharedPreferences> sharedPrefsFuture = _completer.future;
+        _completer!.completeError(e);
+        final Future<NativeSharedPreferences> sharedPrefsFuture = _completer!.future;
         _completer = null;
         return sharedPrefsFuture;
       }
     }
-    return _completer.future;
+    return _completer!.future;
   }
 
   /// The cache that holds all preferences.
@@ -41,7 +41,7 @@ class NativeSharedPreferences {
   ///
   /// It is NOT guaranteed that this cache and the device prefs will remain
   /// in sync since the setter method might fail for any reason.
-  final Map<String, Object> _preferenceCache;
+  final Map<String, Object?> _preferenceCache;
 
   /// Returns all keys in the persistent storage.
   Set<String> getKeys() => Set<String>.from(_preferenceCache.keys);
@@ -51,33 +51,33 @@ class NativeSharedPreferences {
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
   /// bool.
-  bool getBool(String key) => _preferenceCache[key];
+  bool? getBool(String key) => _preferenceCache[key] as bool?;
 
   /// Reads a value from persistent storage, throwing an exception if it's not
   /// an int.
-  int getInt(String key) => _preferenceCache[key];
+  int? getInt(String key) => _preferenceCache[key] as int?;
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
   /// double.
-  double getDouble(String key) => _preferenceCache[key];
+  double? getDouble(String key) => _preferenceCache[key] as double?;
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
   /// String.
-  String getString(String key) => _preferenceCache[key];
+  String? getString(String key) => _preferenceCache[key] as String?;
 
   /// Returns true if persistent storage the contains the given [key].
   bool containsKey(String key) => _preferenceCache.containsKey(key);
 
   /// Reads a set of string values from persistent storage, throwing an
   /// exception if it's not a string set.
-  List<String> getStringList(String key) {
-    List<Object> list = _preferenceCache[key];
+  List<String>? getStringList(String key) {
+    List<Object>? list = _preferenceCache[key] as List<Object>?;
     if (list != null && list is! List<String>) {
       list = list.cast<String>().toList();
       _preferenceCache[key] = list;
     }
     // Make a copy of the list so that later mutations won't propagate
-    return list?.toList();
+    return list?.toList() as List<String>?;
   }
 
   /// Saves a boolean [value] to persistent storage in the background.
@@ -110,7 +110,7 @@ class NativeSharedPreferences {
   /// Removes an entry from persistent storage.
   Future<bool> remove(String key) => _setValue(null, key, null);
 
-  Future<bool> _setValue(String valueType, String key, Object value) {
+  Future<bool> _setValue(String? valueType, String key, Object? value) {
     final String prefixedKey = '$_prefix$key';
     if (value == null) {
       _preferenceCache.remove(key);
@@ -132,7 +132,7 @@ class NativeSharedPreferences {
   Future<bool> commit() async => true;
 
   /// Completes with true once the user preferences for the app has been cleared.
-  Future<bool> clear() {
+  Future<bool?> clear() {
     _preferenceCache.clear();
     return _store.clear();
   }
@@ -142,16 +142,16 @@ class NativeSharedPreferences {
   /// Use this method to observe modifications that were made in native code
   /// (without using the plugin) while the app is running.
   Future<void> reload() async {
-    final Map<String, Object> preferences = await NativeSharedPreferences._getSharedPreferencesMap();
+    final Map<String, Object?> preferences = await NativeSharedPreferences._getSharedPreferencesMap();
     _preferenceCache.clear();
     _preferenceCache.addAll(preferences);
   }
 
-  static Future<Map<String, Object>> _getSharedPreferencesMap() async {
-    final Map<String, Object> fromSystem = await _store.getAll();
+  static Future<Map<String, Object?>> _getSharedPreferencesMap() async {
+    final Map<String, Object> fromSystem = await (_store.getAll() as FutureOr<Map<String, Object>>);
     assert(fromSystem != null);
     // Strip the flutter. prefix from the returned preferences.
-    final Map<String, Object> preferencesMap = <String, Object>{};
+    final Map<String, Object?> preferencesMap = <String, Object?>{};
     for (String key in fromSystem.keys) {
       assert(key.startsWith(_prefix));
       preferencesMap[key.substring(_prefix.length)] = fromSystem[key];
@@ -159,8 +159,8 @@ class NativeSharedPreferences {
     return preferencesMap;
   }
 
-  Future<Map<String, Object>> getAllFromDictionary(List<String> keys) async {
-    final Map<String, Object> fromDictionary = await _store.getAllFromDictionary(keys);
+  Future<Map<String, Object>?> getAllFromDictionary(List<String> keys) async {
+    final Map<String, Object>? fromDictionary = await _store.getAllFromDictionary(keys);
     return fromDictionary;
   }
 
@@ -176,7 +176,7 @@ class NativeSharedPreferences {
       }
       return MapEntry<String, dynamic>(newKey, value);
     });
-    NativeSharedPreferencesStorePlatform.instance = InMemoryNativeSharedPreferencesStore.withData(newValues);
+    NativeSharedPreferencesStorePlatform.instance = InMemoryNativeSharedPreferencesStore.withData(newValues as Map<String, Object>);
     _completer = null;
   }
 }

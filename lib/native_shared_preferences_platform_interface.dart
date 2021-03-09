@@ -56,16 +56,16 @@ abstract class NativeSharedPreferencesStorePlatform {
   /// * Value type "Int" must be passed if the value is of type `int`.
   /// * Value type "String" must be passed if the value is of type `String`.
   /// * Value type "StringList" must be passed if the value is of type `List<String>`.
-  Future<bool> setValue(String valueType, String key, Object value);
+  Future<bool> setValue(String? valueType, String key, Object value);
 
   /// Removes all keys and values in the store.
-  Future<bool> clear();
+  Future<bool?> clear();
 
   /// Returns all key/value pairs persisted in this store.
-  Future<Map<String, Object>> getAll();
+  Future<Map<String, Object>?> getAll();
 
   /// Returns all key/value pairs persisted in this store.
-  Future<Map<String, Object>> getAllFromDictionary(List<String> keys);
+  Future<Map<String, Object>?> getAllFromDictionary(List<String> keys);
 
   // This method makes sure that NativeSharedPreferencesStorePlatform isn't implemented with `implements`.
   //
@@ -111,7 +111,7 @@ class InMemoryNativeSharedPreferencesStore extends NativeSharedPreferencesStoreP
   }
 
   @override
-  Future<bool> setValue(String valueType, String key, Object value) async {
+  Future<bool> setValue(String? valueType, String key, Object value) async {
     _data[key] = value;
     return true;
   }
