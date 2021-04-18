@@ -148,8 +148,7 @@ class NativeSharedPreferences {
   }
 
   static Future<Map<String, Object?>> _getSharedPreferencesMap() async {
-    final Map<String, Object> fromSystem = await (_store.getAll() as FutureOr<Map<String, Object>>);
-    assert(fromSystem != null);
+    final Map<String, Object> fromSystem = await _store.getAll() ?? {};
     // Strip the flutter. prefix from the returned preferences.
     final Map<String, Object?> preferencesMap = <String, Object?>{};
     for (String key in fromSystem.keys) {
